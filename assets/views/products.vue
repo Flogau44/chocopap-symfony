@@ -123,7 +123,10 @@
           :key="product.id"
           class="m-3 flex flex-col place-self-center items-center justify-start"
         >
-          <router-link :to="`/products/${product.id}`">
+          <router-link
+            :to="{ name: 'ProductDetail', params: { id: Number(product.id) } }"
+            :title="product.title"
+          >
             <img
               :src="product.image"
               :alt="product.title"

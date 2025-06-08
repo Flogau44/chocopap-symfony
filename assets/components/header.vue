@@ -1,3 +1,18 @@
+<script setup>
+import { ref } from "vue";
+defineProps({
+  openCart: Function,
+  cartQuantity: Number,
+});
+
+const menuOpen = ref(false);
+const toggleMenu = () => (menuOpen.value = !menuOpen.value);
+const handleCart = () => {
+  menuOpen.value = false;
+  openCart();
+};
+</script>
+
 <template>
   <header class="bg-brown w-full">
     <nav class="mx-auto p-6 font-poppins flex justify-between items-center">
@@ -74,23 +89,3 @@
     </div>
   </header>
 </template>
-
-<script>
-import { ref } from "vue";
-
-export default {
-  name: "Header",
-  setup() {
-    const menuOpen = ref(false);
-
-    const toggleMenu = () => {
-      menuOpen.value = !menuOpen.value;
-    };
-
-    return {
-      menuOpen,
-      toggleMenu,
-    };
-  },
-};
-</script>

@@ -1,3 +1,18 @@
+<script setup>
+import { computed } from "vue";
+
+const props = defineProps({
+  cart: Array,
+  setIsCartOpen: Function,
+  resetCart: Function,
+  removeItem: Function,
+});
+
+const totalPrice = computed(() =>
+  props.cart.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0)
+);
+</script>
+
 <template>
   <section class="relative">
     <div

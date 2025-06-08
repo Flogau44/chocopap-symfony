@@ -1,16 +1,7 @@
 <template>
-  <div>
-    <!-- Affichage du panier -->
-    <Cart
-      v-if="isCartOpen"
-      :cart="cart"
-      :setCart="setCart"
-      :resetCart="resetCart"
-      :setIsCartOpen="closeCart"
-    />
-
-    <main class="w-full mb-5">
-      <section class="mx-2 py-5 md:mx-20 md:py-24">
+  <main class="w-full mb-5">
+    <section class="mx-2 py-5 md:mx-20 md:py-24">
+      <div v-if="product">
         <div
           class="flex flex-col items-center md:flex-row md:justify-center md:space-x-11"
         >
@@ -63,31 +54,32 @@
             <p v-else>Aucun ingrédient disponible pour ce produit.</p>
           </div>
         </div>
-      </section>
-    </main>
-  </div>
+      </div>
+
+      <div v-else class="text-center text-yellow font-bold py-10">
+        Chargement du produit ou produit introuvable...
+      </div>
+    </section>
+  </main>
 </template>
 
 <script>
 import { ref, onMounted, computed } from "vue";
-import Cart from "@/components/Cart.vue";
 import { useRoute } from "vue-router";
 
 export default {
-  components: { Cart },
   setup() {
     const route = useRoute();
     const productId = ref(Number(route.params.id));
     const product = ref(null);
     const quantity = ref(1);
-    const cartStore = useCartStore();
-    const { isCartOpen, closeCart, cart, setCart, resetCart } = cartStore;
 
     onMounted(() => {
       fetch("/products.json")
         .then((res) => res.json())
         .then((data) => {
-          product.value = data.find((p) => p.id === productId.value) || null;
+          product.value =
+            data.find((p) => Number(p.id) === productId.value) || null;
         })
         .catch((error) =>
           console.error("Erreur lors de la récupération des produits :", error)
@@ -101,37 +93,18 @@ export default {
         : product.value.ingredients;
     });
 
-    const addToCart = (selectedProduct, quantity) => {
-      setCart((prevCart) => {
-        const existingProduct = prevCart.find(
-          (item) => item.id === selectedProduct.id
-        );
-        let updatedCart;
-
-        if (existingProduct) {
-          updatedCart = prevCart.map((item) =>
-            item.id === selectedProduct.id
-              ? { ...item, quantity: (item.quantity || 1) + quantity }
-              : item
-          );
-        } else {
-          updatedCart = [...prevCart, { ...selectedProduct, quantity }];
-        }
-
-        return updatedCart;
-      });
+    const addToCart = (selectedProduct, qty) => {
+      console.log(
+        `Produit ajouté : ${selectedProduct.title} (quantité: ${qty})`
+      );
+      // Insère ici la logique pour ajouter au panier
     };
 
     return {
       product,
       quantity,
-      addToCart,
       formattedIngredients,
-      isCartOpen,
-      closeCart,
-      cart,
-      setCart,
-      resetCart,
+      addToCart,
     };
   },
 };
