@@ -2,7 +2,7 @@
   <header class="bg-brown w-full">
     <nav class="mx-auto p-6 font-poppins flex justify-between items-center">
       <router-link to="/" title="Page d'accueil">
-        <img src="/images/logo.png" alt="logo" width="64" height="64" />
+        <img src="../images/logo.png" alt="logo" width="64" height="64" />
       </router-link>
 
       <ul
@@ -12,7 +12,7 @@
           <router-link to="/" class="hover:text-orange">Accueil</router-link>
         </li>
         <li class="py-4 md:py-0 md:mr-6">
-          <router-link to="/boutique" class="hover:text-orange"
+          <router-link to="/products" class="hover:text-orange"
             >Boutique</router-link
           >
         </li>
@@ -56,7 +56,7 @@
         </li>
         <li class="py-4">
           <router-link
-            to="/boutique"
+            to="/products"
             class="underline hover:text-orange"
             @click="menuOpen = false"
             >Boutique</router-link
@@ -76,45 +76,20 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
-import { useCartStore } from "../store/store.js";
+import { ref } from "vue";
 
 export default {
   name: "Header",
   setup() {
     const menuOpen = ref(false);
-    const cartStore = useCartStore(); // Store Pinia / Vuex pour le panier
-    const cartQuantity = computed(() => {
-      return cartStore.cart.reduce(
-        (acc, item) => acc + (item.quantity || 1),
-        0
-      );
-    });
-
-    // Persistance du panier dans localStorage
-    onMounted(() => {
-      localStorage.setItem("cartQuantity", cartQuantity.value.toString());
-    });
 
     const toggleMenu = () => {
       menuOpen.value = !menuOpen.value;
     };
 
-    const openCart = () => {
-      cartStore.openCart();
-    };
-
-    const handleCart = () => {
-      menuOpen.value = false;
-      openCart();
-    };
-
     return {
       menuOpen,
-      cartQuantity,
       toggleMenu,
-      openCart,
-      handleCart,
     };
   },
 };
