@@ -1,3 +1,36 @@
+<script setup>
+import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
+
+const props = defineProps({
+  addToCart: Function, // ✅ Récupère la fonction depuis `App.vue`
+});
+
+const route = useRoute();
+const productId = ref(Number(route.params.id));
+const product = ref(null);
+const quantity = ref(1);
+
+onMounted(() => {
+  fetch("/products.json")
+    .then((res) => res.json())
+    .then((data) => {
+      product.value =
+        data.find((p) => Number(p.id) === productId.value) || null;
+    })
+    .catch((error) =>
+      console.error("Erreur lors de la récupération des produits :", error)
+    );
+});
+
+const formattedIngredients = computed(() => {
+  if (!product.value || !product.value.ingredients) return [];
+  return typeof product.value.ingredients === "string"
+    ? product.value.ingredients.split(". ")
+    : product.value.ingredients;
+});
+</script>
+
 <template>
   <main class="w-full mb-5">
     <section class="mx-2 py-5 md:mx-20 md:py-24">
@@ -32,7 +65,7 @@
               <button
                 type="button"
                 class="text-black bg-orange text-xs font-semibold uppercase mr-20 px-2 py-2 rounded-sm shadow-sm shadow-black transition duration-300 ease-in-out cursor-pointer md:mx-0 md:text-xs hover:bg-yellow hover:text-orange"
-                @click="addToCart(product, quantity)"
+                @click="props.addToCart(product, quantity)"
               >
                 Ajouter au panier
               </button>
@@ -62,50 +95,3 @@
     </section>
   </main>
 </template>
-
-<script>
-import { ref, onMounted, computed } from "vue";
-import { useRoute } from "vue-router";
-
-export default {
-  setup() {
-    const route = useRoute();
-    const productId = ref(Number(route.params.id));
-    const product = ref(null);
-    const quantity = ref(1);
-
-    onMounted(() => {
-      fetch("/products.json")
-        .then((res) => res.json())
-        .then((data) => {
-          product.value =
-            data.find((p) => Number(p.id) === productId.value) || null;
-        })
-        .catch((error) =>
-          console.error("Erreur lors de la récupération des produits :", error)
-        );
-    });
-
-    const formattedIngredients = computed(() => {
-      if (!product.value || !product.value.ingredients) return [];
-      return typeof product.value.ingredients === "string"
-        ? product.value.ingredients.split(". ")
-        : product.value.ingredients;
-    });
-
-    const addToCart = (selectedProduct, qty) => {
-      console.log(
-        `Produit ajouté : ${selectedProduct.title} (quantité: ${qty})`
-      );
-      // Insère ici la logique pour ajouter au panier
-    };
-
-    return {
-      product,
-      quantity,
-      formattedIngredients,
-      addToCart,
-    };
-  },
-};
-</script>

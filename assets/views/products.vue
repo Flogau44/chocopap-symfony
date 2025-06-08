@@ -1,13 +1,73 @@
-<template>
-  <!-- Affichage du panier -->
-  <Cart
-    v-if="isCartOpen"
-    :cart="cart"
-    :setCart="setCart"
-    :resetCart="resetCart"
-    :setIsCartOpen="closeCart"
-  />
+<script setup>
+import { ref, computed, onMounted } from "vue";
 
+const props = defineProps({
+  addToCart: Function, // ✅ Récupère la fonction depuis `App.vue`
+});
+
+const showCategories = ref(true);
+const showPrice = ref(true);
+const showNote = ref(true);
+const products = ref([]);
+
+const filters = ref({
+  minPrice: 1,
+  maxPrice: 100,
+  minNote: 0,
+  maxNote: 5,
+  selectedCategories: [],
+});
+
+const categories = ref([
+  "blanc",
+  "lait",
+  "noir",
+  "noix",
+  "fruit",
+  "caramel",
+  "liqueur",
+]);
+
+onMounted(() => {
+  fetch("/products.json")
+    .then((res) => res.json())
+    .then((data) => (products.value = data))
+    .catch((err) => console.error("Erreur chargement des produits :", err));
+});
+
+// ✅ Correction du filtre
+const filteredProducts = computed(() => {
+  return products.value.filter((product) => {
+    const inPriceRange =
+      product.price >= filters.value.minPrice &&
+      product.price <= filters.value.maxPrice;
+    const inNoteRange =
+      product.note >= filters.value.minNote &&
+      product.note <= filters.value.maxNote;
+    const inCategory =
+      filters.value.selectedCategories.length === 0 ||
+      filters.value.selectedCategories.some(
+        (category) => product.category[category] === true
+      );
+
+    return inPriceRange && inCategory && inNoteRange;
+  });
+});
+
+// ✅ Correction de `toggleCategory`
+const toggleCategory = (category) => {
+  const selected = filters.value.selectedCategories.includes(category);
+  filters.value.selectedCategories = selected
+    ? filters.value.selectedCategories.filter((c) => c !== category)
+    : [...filters.value.selectedCategories, category];
+};
+
+const toggleCategories = () => (showCategories.value = !showCategories.value);
+const togglePrice = () => (showPrice.value = !showPrice.value);
+const toggleNote = () => (showNote.value = !showNote.value);
+</script>
+
+<template>
   <main class="mb-5">
     <div class="py-4 flex justify-center">
       <h1 class="text-5xl text-brown">BOUTIQUE</h1>
@@ -61,25 +121,23 @@
             <label>Prix min</label>
             <input
               type="number"
-              class="filter-input my-1 mx-2 p-2 border-2 border-orange h-8 w-16 rounded-md bg-orange-700"
+              class="filter-input"
               v-model="filters.minPrice"
               min="0"
               max="100"
             />
             <span>€</span>
-            <br />
           </div>
           <div class="flex items-center">
             <label>Prix max</label>
             <input
               type="number"
-              class="filter-input my-1 mx-2 p-2 border-2 border-orange h-8 w-16 rounded-md bg-orange-700"
+              class="filter-input"
               v-model="filters.maxPrice"
               min="0"
               max="100"
             />
             <span>€</span>
-            <br />
           </div>
         </div>
 
@@ -95,7 +153,7 @@
             <label>Note min</label>
             <input
               type="number"
-              class="filter-input my-1 mx-2 p-2 border-2 border-orange h-8 w-16 rounded-md bg-orange-700"
+              class="filter-input"
               v-model="filters.minNote"
               min="0"
               max="5"
@@ -105,7 +163,7 @@
             <label>Note max</label>
             <input
               type="number"
-              class="filter-input my-1 mx-2 p-2 border-2 border-orange h-8 w-16 rounded-md bg-orange-700"
+              class="filter-input"
               v-model="filters.maxNote"
               min="0"
               max="5"
@@ -139,7 +197,7 @@
           <p class="font-light flex justify-center">
             Note : {{ product.note }} /5
           </p>
-          <button class="addCart" @click="addToCart(product)">
+          <button class="addCart" @click="props.addToCart(product)">
             Ajouter au panier
           </button>
         </div>
@@ -147,92 +205,3 @@
     </section>
   </main>
 </template>
-
-<script>
-import { ref, computed, onMounted } from "vue";
-import Cart from "../components/cart.vue";
-
-export default {
-  components: { Cart },
-  setup() {
-    const showCategories = ref(true);
-    const showPrice = ref(true);
-    const showNote = ref(true);
-    const products = ref([]);
-
-    const filters = ref({
-      minPrice: 1,
-      maxPrice: 100,
-      minNote: 0,
-      maxNote: 5,
-      selectedCategories: [],
-    });
-
-    const categories = ref([
-      "blanc",
-      "lait",
-      "noir",
-      "noix",
-      "fruit",
-      "caramel",
-      "liqueur",
-    ]);
-
-    onMounted(() => {
-      fetch("/products.json")
-        .then((res) => res.json())
-        .then((data) => (products.value = data))
-        .catch((err) => console.error("Erreur chargement des produits :", err));
-    });
-
-    // ✅ Correction du filtre
-    const filteredProducts = computed(() => {
-      return products.value.filter((product) => {
-        const inPriceRange =
-          product.price >= filters.value.minPrice &&
-          product.price <= filters.value.maxPrice;
-
-        const inNoteRange =
-          product.note >= filters.value.minNote &&
-          product.note <= filters.value.maxNote;
-
-        // ✅ Vérification correcte des catégories
-        const inCategory =
-          filters.value.selectedCategories.length === 0 ||
-          filters.value.selectedCategories.some(
-            (category) => product.category[category] === true
-          );
-
-        return inPriceRange && inCategory && inNoteRange;
-      });
-    });
-
-    // ✅ Correction de `toggleCategory`
-    const toggleCategory = (category) => {
-      const selected = filters.value.selectedCategories.includes(category);
-      filters.value.selectedCategories = selected
-        ? filters.value.selectedCategories.filter((c) => c !== category)
-        : [...filters.value.selectedCategories, category];
-    };
-
-    const toggleCategories = () =>
-      (showCategories.value = !showCategories.value);
-    const togglePrice = () => (showPrice.value = !showPrice.value);
-    const toggleNote = () => (showNote.value = !showNote.value);
-
-    return {
-      showCategories,
-      showPrice,
-      showNote,
-      filters,
-      categories,
-      products,
-      filteredProducts,
-      toggleCategory,
-      toggleCategories,
-      togglePrice,
-      toggleNote,
-    };
-  },
-};
-</script>

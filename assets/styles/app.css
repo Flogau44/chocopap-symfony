@@ -90,3 +90,6 @@
 .cartItemInput {
   @apply my-1 mx-2 p-2 border-2 border-orange h-8 w-16 rounded-md bg-orange-700;
 }
+.filter-input {
+  @apply my-1 mx-2 p-2 border-2 border-orange h-8 w-16 rounded-md bg-orange-700;
+}
