@@ -1,5 +1,12 @@
 controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
-    type: attribute
+  resource:
+    path: ../src/Controller/
+    namespace: App\Controller
+  type: attribute
+
+# Rediriger toutes les routes vers le contrôleur qui sert l'application Vue.js
+app_app:
+  path: /{route}
+  controller: App\Controller\AppController::index
+  requirements:
+    route: .*
