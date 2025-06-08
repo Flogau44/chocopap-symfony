@@ -1,1 +1,92 @@
 @import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme {
+  /*Police*/
+  --font-fjalla: "Fjalla One", sans-serif;
+  --font-ptserif: "PT Serif", serif;
+
+  /*Couleur*/
+  --color-white: #ffffff;
+  --color-brown: #2c1e1e;
+  --color-brown-700: rgba(44, 30, 30, 0.7);
+  --color-brown-900: rgba(44, 30, 30, 0.9);
+
+  --color-black: #1f1615;
+  --color-blue: #55c0cf;
+
+  --color-orange: #b65f28;
+  --color-orange-700: rgba(182, 95, 40, 0.7);
+  --color-orange-900: rgba(182, 95, 40, 0.9);
+
+  --color-yellow: #ffd543;
+  --color-yellow-700: rgba(255, 213, 67, 0.7);
+  --color-yellow-900: rgba(255, 213, 67, 0.9);
+
+  --color-grey: #eceff3;
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    font-family: "PT Serif", serif;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  .Roboto {
+    font-family: "Fjalla One", sans-serif;
+  }
+  h1 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+  }
+  h3 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 700;
+  }
+  main {
+    min-height: calc(100vh - 64px - 64px);
+  }
+}
+
+.titleChoco {
+  @apply text-yellow font-semibold flex justify-center;
+}
+.priceChoco {
+  @apply font-semibold flex justify-center;
+}
+.addCart {
+  @apply text-black bg-orange text-xs font-semibold uppercase px-1 py-2 rounded-sm shadow-sm shadow-black transition duration-300 ease-in-out cursor-pointer md:text-xs hover:bg-yellow hover:text-orange;
+}
+.remove-img {
+  @apply w-9 cursor-pointer;
+}
+.cartItemImg {
+  @apply w-1/2 m-1;
+}
+.cartItemTitle {
+  @apply text-orange text-sm font-semibold;
+}
+.cartItemInput {
+  @apply my-1 mx-2 p-2 border-2 border-orange h-8 w-16 rounded-md bg-orange-700;
+}

@@ -1,11 +1,15 @@
-<template>
-  <div id="app">
-    <h1 class="text-xl">Hello Vue</h1>
-    <p>Test Test</p>
-  </div>
-</template>
 <script>
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
+
 export default {
-  name: "App",
+  name: "DefaultLayout",
+  components: { Header, Footer },
 };
 </script>
+
+<template>
+  <Header />
+  <router-view />
+  <Footer />
+</template>
